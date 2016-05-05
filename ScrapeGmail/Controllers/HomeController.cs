@@ -47,7 +47,7 @@ namespace ScrapeGmail.Controllers {
 
                 do {
                     try {
-                        ListMessagesResponse response = request.Execute();
+                        ListMessagesResponse response = await request.ExecuteAsync();
                         results.AddRange(response.Messages);
                         request.PageToken = response.NextPageToken;
                     }
@@ -58,7 +58,7 @@ namespace ScrapeGmail.Controllers {
                 if (results != null && results.Count > 0) {
                     firstItem = results[0].Id;
                 }
-                Message myMessage = service.Users.Messages.Get("me", firstItem).Execute();
+                Message myMessage = await service.Users.Messages.Get("me", firstItem).ExecuteAsync();
                 MessagePart mailbody = myMessage.Payload;
                 //Send Body of Gmail through to get the proper UTF8 Encoded Text
                 string updateBody = GetMimeString(mailbody);
