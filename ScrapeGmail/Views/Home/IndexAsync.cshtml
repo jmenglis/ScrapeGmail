@@ -2,7 +2,47 @@
 @{
     ViewBag.Title = "Message Data Returned";
 }
-
+@{ var mixed = ViewBag.Mixed;}
 <h2>The Job has completed</h2>
-@ViewBag.Message;
+<ul>
+    <li>
+        Your email is scored at: @ViewBag.Score
+    </li>
+    <li>
+        The email is <b>@ViewBag.Type</b>.
+    </li>
+    @if (mixed == 1) {
+        <li>
+            The email is mixed, both positive and negative.
+        </li>
+    } else {
+        <li>
+            Your email is affirmatively @ViewBag.Type.
+        </li>
+    }
+</ul>
 
+<div class="btn btn-default" onclick="displayChart()">Click here to display graph</div>
+<div class="chart">
+</div>
+
+<script>
+    function displayChart() {
+        var x = @ViewBag.Score;
+        console.log(x);
+        var data = [x];
+        console.log(data);
+        d3.select(".chart")
+            .selectAll("div")
+            .data(data)
+        .enter().append("div")
+            .style({
+                width: function (d) { return Math.abs((d-0)*100) * 10 + "px"; },
+                background: function (d) {
+                    if (d < 0) { return "red" }
+                    else { return "green" };
+                }
+            })
+            .text(function (d) { return Math.abs(d*100); });
+    }
+</script>

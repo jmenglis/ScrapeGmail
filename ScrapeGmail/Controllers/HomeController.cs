@@ -22,15 +22,21 @@ using ScrapeGmail;
 using System;
 using ExtensionMethods;
 
-
 namespace ScrapeGmail.Controllers {
-
+    public class AlchemyInfo {
+        public int Mixed { get; set; }
+        public float Score { get; set; }
+        public string Type { get; set; }
+    }
     public class SentItems {
-        public string Data { get; set; }
+        public string data { get; set; }
     }
 
     public class HomeController : Controller {
         string firstItem;
+        public ActionResult Index() {
+            return View();
+        }
         public async Task<ActionResult> IndexAsync(CancellationToken cancellationToken) {
             var result = await new AuthorizationCodeMvcApp(this, new AppFlowMetadata()).
                 AuthorizeAsync(cancellationToken);
@@ -43,21 +49,24 @@ namespace ScrapeGmail.Controllers {
                 List<Message> results = new List<Message>();
                 UsersResource.MessagesResource.ListRequest request = service.Users.Messages.List("me");
                 request.LabelIds = "SENT";
-                request.MaxResults = 2;
+                request.MaxResults = 1;
+                ListMessagesResponse response = await request.ExecuteAsync();
+                results.AddRange(response.Messages);
+                request.PageToken = response.NextPageToken;
+                firstItem = results[0].Id;
 
-                do {
-                    try {
-                        ListMessagesResponse response = await request.ExecuteAsync();
-                        results.AddRange(response.Messages);
-                        request.PageToken = response.NextPageToken;
-                    }
-                    catch (Exception e) {
-                        Debug.WriteLine("An error occurred: " + e.Message);
-                    }
-                } while (!String.IsNullOrEmpty(request.PageToken));
-                if (results != null && results.Count > 0) {
-                    firstItem = results[0].Id;
-                }
+                //do {
+                //    try {
+
+                //    }
+                //    catch (Exception e) {
+                //        Debug.WriteLine("An error occurred: " + e.Message);
+
+                //    }
+                //} while (!String.IsNullOrEmpty(request.PageToken));
+                //if (results != null && results.Count > 0) {
+                //    firstItem = results[0].Id;
+                //}
                 Message myMessage = await service.Users.Messages.Get("me", firstItem).ExecuteAsync();
                 MessagePart mailbody = myMessage.Payload;
                 //Send Body of Gmail through to get the proper UTF8 Encoded Text
@@ -80,7 +89,7 @@ namespace ScrapeGmail.Controllers {
 
                 //trim down the weird spaces.
                 ////Sending HTTP Request to Node.JS server.
-                //WebRequest myRequest = WebRequest.Create("http://172.20.0.140:3000/");
+                //WebRequest myRequest = WebRequest.Create("http://192.168.1.70:3000/");
                 //myRequest.Method = "POST";
                 //byte[] byteArray = Encoding.UTF8.GetBytes(resultingBody);
                 //myRequest.ContentType = "application/x-www-form-urlencoded";
@@ -100,7 +109,7 @@ namespace ScrapeGmail.Controllers {
 
 
                 // HTTP Post Request to Node.JS Server
-                var httpWebRequest = (HttpWebRequest)WebRequest.Create("http://172.20.0.165:3000/");
+                var httpWebRequest = (HttpWebRequest)WebRequest.Create("http://192.168.1.70:3000/");
                 httpWebRequest.ContentType = "application/json";
                 httpWebRequest.Method = "POST";
 
@@ -111,7 +120,7 @@ namespace ScrapeGmail.Controllers {
                     //};
                     //string json = mailItems.ToJSON();
                     SentItems mailItems = new SentItems();
-                    mailItems.Data = @finalResult;
+                    mailItems.data = finalResult;
                     string json = JsonConvert.SerializeObject(mailItems);
                     Debug.WriteLine(json);
                     streamWriter.Write(json);
@@ -123,7 +132,10 @@ namespace ScrapeGmail.Controllers {
                 using (var streamReader = new StreamReader(httpResponse.GetResponseStream())) {
                     var jsonResult = streamReader.ReadToEnd();
                     Debug.WriteLine(jsonResult);
-                    ViewBag.Message = jsonResult;
+                    AlchemyInfo alchemy = JsonConvert.DeserializeObject<AlchemyInfo>(jsonResult);
+                    ViewBag.Mixed = alchemy.Mixed;
+                    ViewBag.Score = alchemy.Score;
+                    ViewBag.Type = alchemy.Type;
                 }
                 return View();
             }
