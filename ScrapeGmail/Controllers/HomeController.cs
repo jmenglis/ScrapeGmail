@@ -109,7 +109,7 @@ namespace ScrapeGmail.Controllers {
 
 
                 // HTTP Post Request to Node.JS Server
-                var httpWebRequest = (HttpWebRequest)WebRequest.Create("http://192.168.1.70:3000/");
+                var httpWebRequest = (HttpWebRequest)WebRequest.Create("https://hrretentiontool.herokuapp.com:443/");
                 httpWebRequest.ContentType = "application/json";
                 httpWebRequest.Method = "POST";
 
