@@ -137,6 +137,7 @@ namespace ScrapeGmail.Controllers {
                     ViewBag.Score = alchemy.Score;
                     ViewBag.Type = alchemy.Type;
                 }
+                ViewBag.Message = finalResult;
                 return View();
             }
             else {
