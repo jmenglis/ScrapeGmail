@@ -87,27 +87,6 @@ namespace ScrapeGmail.Controllers {
                 string finalResult = resultingBody.Replace(System.Environment.NewLine, "");
                 string testResult = finalResult.ToString();
 
-                //trim down the weird spaces.
-                ////Sending HTTP Request to Node.JS server.
-                //WebRequest myRequest = WebRequest.Create("http://192.168.1.70:3000/");
-                //myRequest.Method = "POST";
-                //byte[] byteArray = Encoding.UTF8.GetBytes(resultingBody);
-                //myRequest.ContentType = "application/x-www-form-urlencoded";
-                //myRequest.ContentLength = byteArray.Length;
-                //Stream dataStream = myRequest.GetRequestStream();
-                //dataStream.Write(byteArray, 0, byteArray.Length);
-                //dataStream.Close();
-                //WebResponse myResponse = myRequest.GetResponse();
-                //Debug.WriteLine(((HttpWebResponse)myResponse).StatusDescription);
-                //dataStream = myResponse.GetResponseStream();
-                //StreamReader reader = new StreamReader(dataStream);
-                //string responseFromServer = reader.ReadToEnd();
-                //Debug.WriteLine(responseFromServer);
-                //reader.Close();
-                //dataStream.Close();
-                //myResponse.Close();
-
-
                 // HTTP Post Request to Node.JS Server
                 var httpWebRequest = (HttpWebRequest)WebRequest.Create("https://hrretentiontool.herokuapp.com:443/");
                 httpWebRequest.ContentType = "application/json";
