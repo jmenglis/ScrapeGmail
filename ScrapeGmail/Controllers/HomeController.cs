@@ -72,6 +72,12 @@ namespace ScrapeGmail.Controllers {
                 //Send Body of Gmail through to get the proper UTF8 Encoded Text
                 string updateBody = GetMimeString(mailbody);
 
+                int indexOfString = updateBody.IndexOf("From:");
+                if (indexOfString >= 0) {
+                    updateBody = updateBody.Remove(indexOfString);
+                }
+
+                Debug.WriteLine(updateBody);
                 //break up email string and remove any threads that are not part of the sent email.
                 string resultingBody = "";
                 string[] lines = Regex.Split(updateBody, "\n");
